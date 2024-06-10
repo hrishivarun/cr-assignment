@@ -1,9 +1,9 @@
-#root {
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
+} */
 
 .logo {
   height: 6em;
@@ -42,16 +42,4 @@
 }
 
 
-.header{
-  width: 100vw;
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  border-bottom: solid red;
-  padding-top: 0%;
-}
 
-.sync{
-  display: flex;
-  align-items: center;
-}

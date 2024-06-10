@@ -1,24 +1,41 @@
+import { faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-// import styled from "styled-components";
+import styled from "styled-components";
+
+const TopHeader = styled.div`
+    color: white;
+    font-size: x-large;
+    padding: 10px;
+    margin: 10px;
+    border-bottom: solid red;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+`;
+
+const Button = styled.button`
+    font-size: large;
+    padding: 10px;
+    color: orange;
+    background-color: black;
+`
 
 const Header = () => {
-    const [status, setStatus] = useState<'syncing' | 'synced'>('syncing');
-    // const Header = styled.div`
-    //     width: 100vw
-    //     display: flex
-    //     justify-content: space-between`;
-    
+    const [status, setStatus] = useState<'Syncing' | 'Synced'>('Syncing');
+
     function handleSyncStatus(){
-        setStatus('synced');
+        setStatus('Synced');
     }
+    
     return (
-        <div className="header">
-            <img src="" alt="CR"></img>
-            <div className="sync">
-                <div>{status}</div>
-                <button onChange={handleSyncStatus}><img src="../assets/reload.png" alt="reload" /></button>
-            </div>
-        </div>
+        <TopHeader>
+            <img src="" alt="CySync"></img>
+            <Button onClick={handleSyncStatus}>
+                <FontAwesomeIcon icon={faRefresh}/>
+                <span style={{margin:"5px"}}>{status}</span>
+            </Button>
+        </TopHeader>
     )
 }
 

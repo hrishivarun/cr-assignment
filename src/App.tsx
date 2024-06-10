@@ -1,48 +1,89 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
 import './App.css'
 import Header from './components/Header'
-import Sidebar from './components/Sidebar'
-import Screen from './components/Screen'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import Wallets from './components/Wallets'
+import Transactions from './components/Transactions'
+import { blockcypherApi } from './Service/blockCypherApi'
+import { useEffect, useState } from 'react'
+
+export interface Transaction {
+  "tx_hash": string,
+  "block_height": number,
+  "tx_input_n": number,
+  "tx_output_n": number,
+  "value": number,
+  "ref_balance": number,
+  "spent": number,
+  "confirmations": number,
+  "confirmed": string,
+  "double_spend": boolean
+}
+
+export interface Address {
+  walletName: string,
+  address: string,
+  balance: number,
+  txs: Transaction[]
+}
+let walletsNames: string[] = [];
+
 
 function App() {
-  // const [count, setCount] = useState(0)
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  useEffect(() => {
+    blockcypherApi.getWallets()
+    .then( wallets => {
+        walletsNames = wallets;
+        wallets.forEach((walletName: string) => {
+          setTimeout(() => {
+            blockcypherApi.getAddresses(walletName)
+            .then( (addrs) => {
+              const address: Address = {
+                walletName: walletName,
+                address: addrs,
+                balance: 0,
+                txs: []
+              }
+              
+              addrs.forEach( (addr: string) => {
+                setTimeout(()=> {
+                  blockcypherApi.getBalance(addr)
+                  .then( (balance) => {
+                    address.balance = balance;
+                  })
+                }, 2000)
+                setTimeout(() => {
+                  blockcypherApi.getTransactions(addr)
+                  .then( (txs) => {
+                    address.txs = txs;
+                  })
+                }, 2000)
+                
+              }, 2000)
+              addresses.push(address);
+            })
+          }, 2000)
+      })
+        console.log(addresses)
+        setAddresses(addresses)
+    })
+  }, [addresses])
 
-  const router = createBrowserRouter([
+  const screenRouter = createBrowserRouter([
     {
-        path: "/",
-        element: <Sidebar />
+        path: '/',
+        element: <Wallets addrs = {addresses}/>
+    },
+    {
+        path: '/transactions',
+        element: <Transactions addrs = {addresses}/>
     }
-])
+  ]);
 
   return (
     <>
-      {/* <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> */}
       <Header/>
-
-      <RouterProvider router={router}/>
-      <Screen/>
+      <RouterProvider router={screenRouter}/>
     </>
   )
 }
