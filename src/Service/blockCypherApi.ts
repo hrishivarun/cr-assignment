@@ -5,7 +5,6 @@ import { ChainAddresses, Transaction } from '../Models/ApiInterfaces';
 export const REACT_APP_BLOCKCYPHER_API_KEY="45b631418494462aab776764abf095a1";
 
 axiosRetry(axios, { retries: 3, retryDelay: (retryCount) => {
-    console.log(`Retry attempt: ${retryCount}`);
     return retryCount * 2000; // 2 seconds delay between retries
   }});
   

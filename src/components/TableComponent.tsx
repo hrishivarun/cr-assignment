@@ -5,7 +5,6 @@ import { TableComponentProps } from '../Models/ApiInterfaces';
 import { Table, Thead, Tr, Th, Tbody, Td } from '../Models/StyledComponents';
 
 const TableComponent: React.FC<TableComponentProps> = ({ headers, rows }) => {
-    console.log(rows)
     const [tableRows, setRows] = useState<(string | number | JSX.Element)[][]>(rows)
     const handleDelete = (index: number) => {
         setRows(tableRows.filter((_, i) => i !== index));

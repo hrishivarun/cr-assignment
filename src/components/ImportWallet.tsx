@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { blockcypherApi } from '../Service/blockCypherApi';
 import { ImportWalletProp } from '../Models/ApiInterfaces';
 import { Overlay, Modal } from '../Models/StyledComponents';
 
@@ -10,12 +9,7 @@ const ImportWalletModal: React.FC<ImportWalletProp> = ({ showModal, onWalletImpo
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    blockcypherApi.generateHDWallet(walletName, mnemonic)
-    .then(res => res.data.name)
-    .then(hdWallet => {
-      onWalletImport(hdWallet);
-    });
-
+    onWalletImport(walletName);
     onClose();
   };
 

@@ -8,16 +8,12 @@ import { useEffect, useState } from 'react'
 import { Address } from './Models/ApiInterfaces'
 
 
-let walletsNames: string[] = [];
-
-
 function App() {
   const [addresses, setAddresses] = useState<Address[]>([]);
 
   useEffect(() => {
     blockcypherApi.getWallets()
     .then( wallets => {
-        walletsNames = wallets;
         wallets.forEach((walletName: string) => {
           setTimeout(() => {
             blockcypherApi.getAddresses(walletName)
@@ -28,22 +24,63 @@ function App() {
                 balance: 0,
                 txs: []
               }
+              console.log(addrs)
               
-              addrs.forEach( (addr: string) => {
-                setTimeout(()=> {
-                  blockcypherApi.getBalance(addr)
-                  .then( (balance) => {
-                    address.balance = balance;
-                  })
+              if(addrs)
+                addrs.forEach( (addr: string) => {
+                  setTimeout(()=> {
+                    blockcypherApi.getBalance(addr)
+                    .then( (balance) => {
+                      address.balance = balance;
+                    })
+                  }, 2000)
+                  setTimeout(() => {
+                    blockcypherApi.getTransactions(addr)
+                    .then( (txs) => {
+                      address.txs = txs;
+                    })
+                  }, 2000)
+                  
                 }, 2000)
-                setTimeout(() => {
-                  blockcypherApi.getTransactions(addr)
-                  .then( (txs) => {
-                    address.txs = txs;
-                  })
+              addresses.push(address);
+            })
+          }, 2000)
+      })
+        setAddresses(addresses)
+    })
+  }, [])
+
+  useEffect(() => {
+    blockcypherApi.getWallets()
+    .then( wallets => {
+        wallets.forEach((walletName: string) => {
+          setTimeout(() => {
+            blockcypherApi.getAddresses(walletName)
+            .then( (addrs) => {
+              const address: Address = {
+                walletName: walletName,
+                address: addrs,
+                balance: 0,
+                txs: []
+              }
+              console.log(addrs)
+              
+              if(addrs)
+                addrs.forEach( (addr: string) => {
+                  setTimeout(()=> {
+                    blockcypherApi.getBalance(addr)
+                    .then( (balance) => {
+                      address.balance = balance;
+                    })
+                  }, 2000)
+                  setTimeout(() => {
+                    blockcypherApi.getTransactions(addr)
+                    .then( (txs) => {
+                      address.txs = txs;
+                    })
+                  }, 2000)
+                  
                 }, 2000)
-                
-              }, 2000)
               addresses.push(address);
             })
           }, 2000)

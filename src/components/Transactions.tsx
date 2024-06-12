@@ -21,7 +21,7 @@ const Transactions: React.FC<TransactionsProps> = ({addrs}) => {
 
             })
         })
-        // console.log(addrs, walletsToSet)
+        
         setTransactions(transactionsToSet)
         }, [addrs])
 

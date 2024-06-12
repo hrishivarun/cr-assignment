@@ -17,7 +17,7 @@ export interface ChainAddress {
 }
 
 export interface ChainAddresses {
-  chain_address: ChainAddress[]
+  chain_addresses: ChainAddress[]
 }
 
 export interface Address {

@@ -19,12 +19,10 @@ const Wallets: React.FC<WalletsProps> = ({addrs}) => {
   const handleImportedWallet = (hdWallet: string) => {
     blockcypherApi.getHdWalletAddrsChains(hdWallet)
     .then((chains) => {
-      console.log(chains);
       const walletsToSet = wallets;
       if(chains.length !== 0)
         chains.forEach(chain => {
-          console.log(chain);
-          chain.chain_address.forEach(chainAddress => {
+          chain.chain_addresses.forEach(chainAddress => {
             const addrs = chainAddress.address;
             setTimeout(()=> {
               blockcypherApi.getBalance(addrs)
@@ -35,13 +33,12 @@ const Wallets: React.FC<WalletsProps> = ({addrs}) => {
           })
         })
       setWallets(walletsToSet);
-      console.log(wallets);
     })
   }
 
   useEffect(() => {
     const walletsToSet: React.SetStateAction<(string | number)[][]> = []
-    console.log(addrs)
+
     addrs.forEach((addr) => {
         walletsToSet.push(["BITCOIN", addr.balance])  
     })
