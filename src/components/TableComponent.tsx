@@ -1,46 +1,19 @@
-import React from 'react';
-import styled from 'styled-components';
-
-const Table = styled.table`
-  width: 701px;
-  border-spacing: 0 20px;
-`;
-
-const Thead = styled.thead`
-  background-color: #333;
-  color: white;
-`;
-
-const Th = styled.th`
-  text-align: start;
-  padding: 10px;
-  background-color: #000;
-  border-top: 1px solid #444;
-`;
-
-const Tbody = styled.tbody`
-  background-color: #222;
-  color: white;
-`;
-
-const Tr = styled.tr`
-  &:nth-child(even) {
-    background-color: #2a2a2a;
-  }
-`;
-
-const Td = styled.td`
-  padding: 10px;
-  border: 1px solid #444;
-  text-align: center;
-`;
-
-interface TableComponentProps {
-  headers: string[];
-  rows: (string | JSX.Element | number)[][];
-}
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from 'react';
+import { TableComponentProps } from '../Models/ApiInterfaces';
+import { Table, Thead, Tr, Th, Tbody, Td } from '../Models/StyledComponents';
 
 const TableComponent: React.FC<TableComponentProps> = ({ headers, rows }) => {
+    console.log(rows)
+    const [tableRows, setRows] = useState<(string | number | JSX.Element)[][]>(rows)
+    const handleDelete = (index: number) => {
+        setRows(tableRows.filter((_, i) => i !== index));
+    }
+
+    useEffect(() => {
+        setRows(rows);
+    }, [rows])
   return (
     <Table>
       <Thead>
@@ -51,13 +24,14 @@ const TableComponent: React.FC<TableComponentProps> = ({ headers, rows }) => {
         </Tr>
       </Thead>
       <Tbody>
-        {rows.map((row, rowIndex) => (
+        {tableRows.map((row, rowIndex) => (
           <Tr key={rowIndex}>
             {row.map((cell, cellIndex) => (
               <Td key={cellIndex}>
                 {cell}
               </Td>
             ))}
+            {(headers.length==3) && <Td><FontAwesomeIcon icon={faTrashAlt} onClick={() => handleDelete(rowIndex)} /></Td>}
           </Tr>
         ))}
       </Tbody>

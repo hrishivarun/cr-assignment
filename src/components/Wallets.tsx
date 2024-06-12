@@ -1,67 +1,62 @@
 import React, { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
-import styled from 'styled-components';
 import TableComponent from './TableComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { Address } from '../App';
-// import { blockcypherApi } from '../Service/blockCypherApi';
-
-const Display = styled.div`
-    padding: 10px 0;
-    display: flex;
-    justify-content: space-around;  
-`;
-
-const View = styled.div`
-  color: white;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const ImportW = styled.button`
-    align-self: flex-end;
-    margin: 20px;
-    font-size: x-large;
-    color: white;
-    padding: 15px;
-    border-radius: 10px;
-    background-color: #222;
-`;
-
-interface WalletsProps {
-    addrs: Address[];
-  }
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import ImportWalletModal from './ImportWallet';
+import { blockcypherApi } from '../Service/blockCypherApi';
+import { Display, View, ImportW } from '../Models/StyledComponents';
+import { WalletsProps } from '../Models/ApiInterfaces';
   
 const Wallets: React.FC<WalletsProps> = ({addrs}) => {
   const headers = ['Coin', 'Holding', 'Actions'];
-  const [wallets, setWallets] = useState<(string | JSX.Element | number)[][]>([]);
-//   console.log(wallets)
-  
-//   const handleDelete = (index: number) => {
-//     setWallets(wallets.filter((_, i) => i !== index));
-//   };
-  
-  useEffect(() => {
-    const walletsToSet: React.SetStateAction<(string | number | JSX.Element)[][]> = []
-    console.log(addrs)
-    addrs.forEach((addr,index) => {
-        walletsToSet.push(["BITCOIN", addr.balance, <FontAwesomeIcon icon={faTrashAlt} onClick={() => handleDelete(index)} />])  
-        console.log(addr, walletsToSet, index)
+  const [wallets, setWallets] = useState<(string | number)[][]>([]);
+  const [showImportWallet, setShowImportWallet] = useState(false)
+
+  const handleShowImportWallet = () =>  setShowImportWallet(true);
+  const closeModal = () => setShowImportWallet(false);
+
+  const handleImportedWallet = (hdWallet: string) => {
+    blockcypherApi.getHdWalletAddrsChains(hdWallet)
+    .then((chains) => {
+      console.log(chains);
+      const walletsToSet = wallets;
+      if(chains.length !== 0)
+        chains.forEach(chain => {
+          console.log(chain);
+          chain.chain_address.forEach(chainAddress => {
+            const addrs = chainAddress.address;
+            setTimeout(()=> {
+              blockcypherApi.getBalance(addrs)
+                .then((balance) => {
+                  walletsToSet.push(["BITCOIN", balance]);
+                })
+              }, 2000)
+          })
+        })
+      setWallets(walletsToSet);
+      console.log(wallets);
     })
-    // console.log(addrs, walletsToSet)
+  }
+
+  useEffect(() => {
+    const walletsToSet: React.SetStateAction<(string | number)[][]> = []
+    console.log(addrs)
+    addrs.forEach((addr) => {
+        walletsToSet.push(["BITCOIN", addr.balance])  
+    })
     setWallets(walletsToSet)
-  }, [])
+  }, [addrs])
 
   return (
     <Display>
       <Sidebar />
       <View>
-        <ImportW>
+        <ImportW onClick={handleShowImportWallet}>
             <FontAwesomeIcon icon={faPlusCircle} />
             <span style={{margin:"0 5px", fontSize: "20px"}}>Import Wallet</span>
         </ImportW>
+        <ImportWalletModal showModal={showImportWallet} onWalletImport = {handleImportedWallet} onClose={closeModal}></ImportWalletModal>
         <div style={{ marginTop: '20px', padding: '5px 20px' }}>Total Coins: {wallets.length}</div>
         <TableComponent headers={headers} rows={wallets} />
       </View>

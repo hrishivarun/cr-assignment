@@ -5,31 +5,15 @@ import Wallets from './components/Wallets'
 import Transactions from './components/Transactions'
 import { blockcypherApi } from './Service/blockCypherApi'
 import { useEffect, useState } from 'react'
+import { Address } from './Models/ApiInterfaces'
 
-export interface Transaction {
-  "tx_hash": string,
-  "block_height": number,
-  "tx_input_n": number,
-  "tx_output_n": number,
-  "value": number,
-  "ref_balance": number,
-  "spent": number,
-  "confirmations": number,
-  "confirmed": string,
-  "double_spend": boolean
-}
 
-export interface Address {
-  walletName: string,
-  address: string,
-  balance: number,
-  txs: Transaction[]
-}
 let walletsNames: string[] = [];
 
 
 function App() {
   const [addresses, setAddresses] = useState<Address[]>([]);
+
   useEffect(() => {
     blockcypherApi.getWallets()
     .then( wallets => {
@@ -64,7 +48,6 @@ function App() {
             })
           }, 2000)
       })
-        console.log(addresses)
         setAddresses(addresses)
     })
   }, [addresses])

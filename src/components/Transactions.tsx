@@ -1,37 +1,10 @@
 import Sidebar from "./Sidebar";
-import styled from "styled-components";
 import TableComponent from "./TableComponent";
 import { useEffect, useState } from "react";
-import { Address } from "../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-
-const Display = styled.div`
-    padding: 10px 0;
-    display: flex;
-    justify-content: space-around;   
-`
-const View = styled.div`
-  color: white;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Head = styled.header`
-    margin: 20px;
-    font-size: 32px;
-    font-weight: 900;
-    color: orange
-`
-const TransactionDetails = styled.div`
-    color: #800080;
-    font-weight: 900;
-`
-
-interface TransactionsProps {
-    addrs: Address[];
-}
+import { TransactionsProps } from "../Models/ApiInterfaces";
+import { TransactionDetails, Display, View, Head } from "../Models/StyledComponents";
 
 const Transactions: React.FC<TransactionsProps> = ({addrs}) => {
     
@@ -50,7 +23,7 @@ const Transactions: React.FC<TransactionsProps> = ({addrs}) => {
         })
         // console.log(addrs, walletsToSet)
         setTransactions(transactionsToSet)
-        }, [])
+        }, [addrs])
 
     return (
         <Display>

@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { Transaction } from '../App';
 import axiosRetry from 'axios-retry';
+import { ChainAddresses, Transaction } from '../Models/ApiInterfaces';
 
-export const REACT_APP_BLOCKCYPHER_API_KEY="45cfc995bcd844d197978c1e306adb1a";
+export const REACT_APP_BLOCKCYPHER_API_KEY="45b631418494462aab776764abf095a1";
 
 axiosRetry(axios, { retries: 3, retryDelay: (retryCount) => {
     console.log(`Retry attempt: ${retryCount}`);
@@ -19,12 +19,16 @@ export const blockcypherApi = {
     .then(res => res.data.wallet_names)
     return wallets;
     },
+  getHdWalletAddrsChains: (walletName: string) => {
+    const hdWalletAddrsChain: Promise<ChainAddresses[]> = api.get(`/wallets/hd/${walletName}?token=${REACT_APP_BLOCKCYPHER_API_KEY}`)
+    .then(res => res.data.chains)
+    return hdWalletAddrsChain;
+    },
   getAddresses: (walletName: string) => {
     const addrs = api.get(`/wallets/${walletName}/addresses?token=${REACT_APP_BLOCKCYPHER_API_KEY}`)
     .then( res => res.data.addresses)
     return addrs;
     },
-  importWallet: (mnemonic: string, walletName: string) => api.post('/wallets', { mnemonic, walletName }),
   getBalance: (address: string) => {
     const balance = api.get(`/addrs/${address}/balance`)
     .then(res => res.data.balance)
@@ -35,5 +39,10 @@ export const blockcypherApi = {
         api.get(`/addrs/${address}?token=${REACT_APP_BLOCKCYPHER_API_KEY}`)
         .then(res => res.data.txrefs)
     return txs;
+    },
+  generateHDWallet: (walletName: string, mnemonic: string) => {
+    const hdWallet = api.post(`/wallets/hd?token=${REACT_APP_BLOCKCYPHER_API_KEY}`,
+      { name: walletName, extended_public_key: mnemonic });
+    return hdWallet;
     },
 };

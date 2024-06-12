@@ -1,20 +1,29 @@
 import React, { useState } from 'react';
-import './ImportWallet.css';
+import { blockcypherApi } from '../Service/blockCypherApi';
+import { ImportWalletProp } from '../Models/ApiInterfaces';
+import { Overlay, Modal } from '../Models/StyledComponents';
 
-const ImportWallet = () => {
+const ImportWalletModal: React.FC<ImportWalletProp> = ({ showModal, onWalletImport, onClose }) => {
   const [walletName, setWalletName] = useState('');
   const [mnemonic, setMnemonic] = useState('');
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    // Handle the form submission logic here
-    console.log('Wallet Name:', walletName);
-    console.log('Mnemonic:', mnemonic);
+
+    blockcypherApi.generateHDWallet(walletName, mnemonic)
+    .then(res => res.data.name)
+    .then(hdWallet => {
+      onWalletImport(hdWallet);
+    });
+
+    onClose();
   };
 
+  if (!showModal) return null;
+
   return (
-    <div className="import-wallet-container">
-      <div className="import-wallet">
+    <Overlay>
+      <Modal>
         <h2>Import Wallet</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -34,11 +43,11 @@ const ImportWallet = () => {
               required
             />
           </div>
-          <button type="submit">Submit</button>
+          <button type="submit" onClick={handleSubmit}>Submit</button>
         </form>
-      </div>
-    </div>
+      </Modal>
+    </Overlay>
   );
 };
 
-export default ImportWallet;
+export default ImportWalletModal;
